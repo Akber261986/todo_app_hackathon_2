@@ -22,38 +22,70 @@ The application follows a clean architecture pattern:
 
 ## Requirements
 
-- Python 3.13+
-- Standard library only (no external dependencies for Phase I)
+- Python 3.11+
+- Dependencies listed in `pyproject.toml`
 
 ## How to Run
 
+There are two ways to run the application:
+
+### Method 1: Using run_app.py (Recommended)
 ```bash
-cd hackathon-todo
+python run_app.py
+```
+
+### Method 2: Using main.py directly
+```bash
 python src/main.py
 ```
 
 ## Project Structure
 
 ```
-hackathon-todo/
+todo_app_hackathon_2/
+├── .claude/               # Claude Code configuration
+├── .specify/              # Specification kit templates
+├── .spec-kit/             # Specification kit files
+├── history/               # Prompt history records
 ├── specs/                 # Specification documents
 │   ├── constitution.md    # Project constitution
-│   ├── plan.md           # Implementation plan
-│   ├── data-model.md     # Data model specification
-│   ├── research.md       # Research decisions
-│   └── features/         # Feature specifications
-│       └── task-crud.md  # Task CRUD specification
-├── src/                  # Source code
-│   ├── models/           # Data models
-│   │   └── task.py      # Task class
-│   ├── services/         # Business logic
-│   │   └── todo_list.py # TodoList class
-│   ├── ui/              # User interface
-│   │   └── console_menu.py # Console menu
-│   └── main.py          # Application entry point
-├── test_todo_app.py      # Test script
-└── README.md            # This file
+│   ├── data-model.md      # Data model specification
+│   ├── overview.md        # Project overview
+│   ├── plan.md            # Implementation plan
+│   ├── research.md        # Research decisions
+│   └── features/          # Feature specifications
+├── src/                   # Source code
+│   ├── __init__.py
+│   ├── main.py            # Application entry point
+│   ├── models/            # Data models
+│   │   ├── __init__.py
+│   │   └── task.py        # Task class
+│   ├── services/          # Business logic
+│   │   ├── __init__.py
+│   │   └── todo_list.py   # TodoList class
+│   └── ui/                # User interface
+│       ├── __init__.py
+│       └── console_menu.py # Console menu interface
+├── test_todo_app.py       # Test script
+├── run_app.py             # Application runner script
+├── pyproject.toml         # Project dependencies and configuration
+└── README.md              # This file
 ```
+
+## Dependencies
+
+The project uses the following dependencies (defined in `pyproject.toml`):
+- FastAPI
+- uvicorn
+- SQLAlchemy
+- asyncpg
+- Pydantic
+- python-multipart
+- passlib[bcrypt]
+- python-jose[cryptography]
+- pytest
+- httpx
+- And development tools (black, flake8, mypy, etc.)
 
 ## Testing
 
@@ -63,9 +95,14 @@ To run the tests:
 python test_todo_app.py
 ```
 
-## Phase I Implementation
+Or using pytest:
+```bash
+pytest test_todo_app.py
+```
 
-This implementation completes Phase I requirements with:
+## Project Status
+
+This implementation includes:
 
 - Task model with validation (id, title, description, status)
 - In-memory storage using TodoList class
