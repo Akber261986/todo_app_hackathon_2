@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git fetch --all --prune)",
+      "Bash(.specify/scripts/powershell/create-new-feature.ps1 -Json \"Specify details for these skills: Each skill must be self-contained, accept inputs like spec files or code snippets, and produce outputs like refined specs or test reports. Use natural language processing for Todo-specific features \\(e.g., task CRUD, priorities, AI chat integration\\).\" --number 1 --short-name \"skills-nlp-todo\")",
+      "Bash(.specify/scripts/powershell/check-prerequisites.ps1 -Json)",
+      "Bash(.specify/scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks)",
+      "Bash(python tests/test_runner.py)"
+    ]
+  }
+}

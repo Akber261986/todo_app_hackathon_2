@@ -1,55 +1,64 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report:
+Version change: 1.0.0 → 1.1.0
+Added sections:
+- Principle 4: Skill Reusability
+- Principle 5: Phase Alignment
+- Principle 6: Nine Pillars Compliance
+Modified sections:
+- Principle 1 → Skill-Centric Architecture
+- Principle 2 → Specification-Driven Development
+- Principle 3 → Automated Quality Assurance
+- Section 2 → Todo App Development Constraints
+- Section 3 → Skill-Based Development Workflow
+Templates requiring updates:
+- .specify/templates/plan-template.md ⚠ pending
+- .specify/templates/spec-template.md ⚠ pending
+- .specify/templates/tasks-template.md ⚠ pending
+- .specify/templates/commands/*.md ⚠ pending
+Follow-up TODOs: none
+-->
+
+# Todo App Skills Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Skill-Centric Architecture
+All functionality must be encapsulated as reusable Claude Code Skills that can operate across different phases of development. Skills must be self-contained, independently testable, and documented with clear interfaces. Each skill should have a single, well-defined purpose with explicit inputs and outputs.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Specification-Driven Development
+Development must begin with clear, complete specifications before implementation. The Spec Refiner Skill ensures all specifications meet quality standards for clarity, completeness, and alignment with project requirements. Specifications must include acceptance criteria, edge cases, and test scenarios before development begins.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Automated Quality Assurance
+Quality assurance must be automated through the Code Tester Skill which generates unit tests and simulates execution without running code. All code must pass comprehensive test coverage analysis before integration. Test simulation provides confidence in code correctness without execution risks.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Skill Reusability
+All skills must be designed for reuse across multiple projects and phases. Skills should follow established patterns, maintain consistent interfaces, and avoid tight coupling to specific implementations. Reusable skills reduce development time and improve consistency.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Phase Alignment
+Skills must align with and support the specific phase of development (specification, planning, implementation, testing). The Feature Integrator Skill ensures proper integration while maintaining clean architecture throughout all phases. Skills must understand and adapt to phase-specific requirements.
 
-### [PRINCIPLE_6_NAME]
+### VI. Nine Pillars Compliance
+All skills and implementations must follow the Nine Pillars of AI-Driven Development: 1) Autonomous Execution, 2) Continuous Learning, 3) Predictable Outcomes, 4) Human-AI Collaboration, 5) Adaptive Intelligence, 6) Quality Assurance, 7) Scalable Architecture, 8) Transparent Operations, 9) Sustainable Development.
 
+## Todo App Development Constraints
 
-[PRINCIPLE__DESCRIPTION]
+Technology stack requirements: Python/JavaScript for core functionality, Markdown for specifications, Git for version control.
+Compliance standards: All code must be well-documented, maintainable, and follow established patterns.
+Deployment policies: Skills must be portable and not depend on specific runtime environments.
+Security requirements: No hardcoded secrets, proper input validation in all skills.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+## Skill-Based Development Workflow
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
-
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
-
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+Code review requirements: All skill implementations must include usage examples and test scenarios.
+Testing gates: Skills must demonstrate functionality through simulated test execution.
+Quality metrics: Skills must achieve minimum scores for reusability, maintainability, and effectiveness.
+Documentation standards: All skills must include clear usage instructions and integration guidelines.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This constitution supersedes all other development practices for Todo app projects. Amendments require explicit documentation, approval from project stakeholders, and migration plan for existing implementations. All pull requests and code reviews must verify compliance with these principles.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+Skills must be versioned using semantic versioning (MAJOR.MINOR.PATCH). Breaking changes require major version increments and clear migration paths. All skill interfaces must maintain backward compatibility within the same major version.
+
+**Version**: 1.1.0 | **Ratified**: 2025-12-28 | **Last Amended**: 2025-12-28

@@ -1,0 +1,32 @@
+# Spec Kit Configuration for Todo App Monorepo
+name: "Todo App Hackathon"
+version: "1.0.0"
+description: "A monorepo for the Todo app hackathon project"
+language: "python"
+package_manager: "uv"
+features:
+  - task-crud
+  - user-authentication
+  - task-prioritization
+  - due-dates
+  - task-categories
+
+directories:
+  specs: "./specs"
+  source: "./src"
+  tests: "./tests"
+  docs: "./docs"
+
+python:
+  version: "3.11"
+  uv_config:
+    dev: true
+    locked: false
+
+workflow:
+  phases:
+    - spec
+    - plan
+    - develop
+    - test
+    - deploy
