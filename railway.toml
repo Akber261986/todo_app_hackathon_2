@@ -58,3 +58,18 @@ builder = "NIXPACKS"
   type = "web"
   # Port that the application will run on
   port = 8000
+
+# Scale configuration
+[build.args]
+  # Ensure proper build arguments if needed
+  PYTHONUNBUFFERED = "1"
+
+# Runtime configuration
+[run]
+  # Increase startup timeout
+  startupTimeout = 120
+  # Health check settings
+  healthcheckPath = "/health"
+  healthcheckTimeout = 30
+  healthcheckInterval = 60
+  healthcheckMaxRetries = 3
