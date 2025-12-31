@@ -1,0 +1,60 @@
+# Railway Configuration File
+
+[build]
+# Use Nixpacks for automatic build detection of Python applications
+builder = "NIXPACKS"
+
+# Build commands for the backend
+[nixpacks]
+  # Python version to use
+  pythonVersion = "3.11"
+
+  # Install system dependencies (similar to Dockerfile)
+  pkgs = ["gcc", "postgresql"]
+
+  # Install requirements
+  installCmd = "pip install --no-cache-dir -r backend/requirements.txt"
+
+  # Start command for the backend
+  startCmd = "cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+
+# Environment variables that need to be set in Railway UI
+[variables]
+  # Database configuration (should be set in Railway dashboard)
+  DATABASE_URL = { required = true }
+
+  # Authentication secret (should be set in Railway dashboard)
+  BETTER_AUTH_SECRET = { required = true }
+
+  # Token expiration (optional, default 30 minutes)
+  ACCESS_TOKEN_EXPIRE_MINUTES = { default = "30" }
+
+# Services configuration
+[deploy]
+  # Increase timeout for deployment (building Python dependencies can take time)
+  maxDeployTimeout = 600  # 10 minutes
+
+  # Number of instances
+  numInstances = 1
+
+  # Restart policy
+  restartPolicyType = "ON_FAILURE"
+  restartPolicyMaxRetries = 3
+
+# Health check configuration
+[healthcheck]
+  # Health check endpoint
+  checkUrl = "/health"
+  # Timeout for health checks
+  timeout = 30
+  # Interval between health checks
+  interval = 60
+  # Number of consecutive failures before restart
+  maxRetries = 3
+
+# Service configuration
+[service]
+  # Service type
+  type = "web"
+  # Port that the application will run on
+  port = 8000
