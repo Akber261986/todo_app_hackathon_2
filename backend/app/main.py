@@ -1,9 +1,11 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import SQLModel, create_engine
 from .api.v1 import auth, tasks
 from .core.config import settings
 from .database.session import engine
+import uvicorn
 
 app = FastAPI(title="Todo App API", version="1.0.0")
 
@@ -32,3 +34,11 @@ def read_root():
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
+
+def start_server():
+    """Start the server with the PORT environment variable."""
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
+
+if __name__ == "__main__":
+    start_server()
