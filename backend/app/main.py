@@ -25,7 +25,11 @@ app.include_router(tasks.router, prefix="/api/v1", tags=["tasks"])
 @app.on_event("startup")
 async def startup_event():
     # Create database tables
-    SQLModel.metadata.create_all(bind=engine)
+    try:
+        SQLModel.metadata.create_all(bind=engine)
+    except Exception as e:
+        print(f"Error creating database tables: {e}")
+        raise
 
 @app.get("/")
 def read_root():
