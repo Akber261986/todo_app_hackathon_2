@@ -65,6 +65,12 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     """
     Verify a plain password against its hash
     """
+    # Ensure password is not longer than 72 bytes for bcrypt during verification
+    password_bytes = plain_password.encode('utf-8')
+    if len(password_bytes) > 72:
+        password_bytes = password_bytes[:72]
+        plain_password = password_bytes.decode('utf-8', errors='ignore')
+
     return pwd_context.verify(plain_password, hashed_password)
 
 
@@ -81,10 +87,3 @@ def get_password_hash(password: str) -> str:
         password = password_bytes.decode('utf-8')
 
     return pwd_context.hash(password)
-
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """
-    Verify a plain password against the hashed password
-    """
-    return pwd_context.verify(plain_password, hashed_password)
