@@ -9,4 +9,4 @@ fi
 echo "Starting application on port $PORT"
 
 # Start the application with the PORT from environment variable
-exec uvicorn app.main:app --host 0.0.0.0 --port $PORT
+exec python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT

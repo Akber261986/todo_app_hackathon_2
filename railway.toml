@@ -15,8 +15,8 @@ builder = "NIXPACKS"
   # Install requirements
   installCmd = "pip install --no-cache-dir -r backend/requirements.txt"
 
-  # Start command for the backend
-  startCmd = "cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+  # Start command for the backend (Procfile takes precedence if it exists)
+  startCmd = "cd backend && python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT"
 
 # Environment variables that need to be set in Railway UI
 [variables]
