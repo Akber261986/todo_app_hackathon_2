@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [
-    { name = "Hackathon Team", email = "team@example.com" }
+    { name = "Ghulam Akber", email = "akabarghulam47@gmail.com" }
 ]
 dependencies = [
     "fastapi>=0.104.1",
