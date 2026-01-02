@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import apiClient from './api';
 
 interface AuthContextType {
   user: any | null;
@@ -47,20 +48,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string) => {
     // This would typically call your backend auth API
     // For now, we'll simulate the process
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/signin`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
+    const response = await apiClient.post('/auth/signin', {
+      email,
+      password,
     });
 
-    if (!response.ok) {
-      throw new Error('Login failed');
-    }
-
-    const data = await response.json();
-    const { access_token } = data;
+    const { access_token } = response.data;
 
     localStorage.setItem('token', access_token);
     setToken(access_token);
@@ -84,20 +77,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signup = async (email: string, password: string) => {
     // This would typically call your backend auth API
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/signup`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
+    const response = await apiClient.post('/auth/signup', {
+      email,
+      password,
     });
 
-    if (!response.ok) {
-      throw new Error('Signup failed');
-    }
-
-    const data = await response.json();
-    const { access_token } = data;
+    const { access_token } = response.data;
 
     localStorage.setItem('token', access_token);
     setToken(access_token);

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import axios from 'axios';
+import apiClient from '@/lib/api';
 
 export default function SignUpPage() {
   const [email, setEmail] = useState('');
@@ -18,7 +18,7 @@ export default function SignUpPage() {
     setError('');
 
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/signup`, {
+      const response = await apiClient.post('/auth/signup', {
         email,
         password,
       });
