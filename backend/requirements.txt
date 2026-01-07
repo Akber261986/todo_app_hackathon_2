@@ -1,27 +1,19 @@
-<<<<<<< HEAD
 fastapi==0.115.6
 uvicorn[standard]==0.32.1
 openai-agents[litellm]>=0.6.2
-python-dotenv==1.0.1
-asyncpg>=0.29.0
-better-auth==0.0.1b11
-pyjwt[crypto]==2.10.1
-python-multipart==0.0.20
-=======
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
 sqlmodel==0.0.16
 pydantic==2.5.0
 pydantic-settings==2.1.0
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 bcrypt==3.2.2
-python-multipart==0.0.6
+python-multipart==0.0.20
 python-jwt==4.1.0
 httpx==0.25.2
 pytest==7.4.3
-python-dotenv==1.0.0
+python-dotenv==1.0.1
 alembic==1.13.1
-asyncpg==0.29.0
+asyncpg>=0.29.0
 psycopg2-binary==2.9.9
->>>>>>> 36d2cf9fbc6319f638798696fbcb119bae3d9a9c
+better-auth==0.0.1b11
+pyjwt[crypto]==2.10.1
