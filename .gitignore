@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Dependencies
 __pycache__/
 *.pyc
@@ -37,6 +38,39 @@ coverage.xml
 .env.*.production.local
 .env.*.staging
 .env.*.staging.local
+=======
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+#nextjs
+.next
+node_modules
+
+# Virtual Environment
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+>>>>>>> 36d2cf9fbc6319f638798696fbcb119bae3d9a9c
 
 # IDE
 .vscode/
@@ -45,6 +79,7 @@ coverage.xml
 *.swo
 *~
 .DS_Store
+<<<<<<< HEAD
 Thumbs.db
 
 # Build
@@ -117,3 +152,40 @@ __pycache__/
 
 # Others
 testapi.py
+=======
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# Process
+*.pid
+
+# Coverage
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+.coverage.xml
+
+# FastAPI / Uvicorn
+*.db
+*.db-journal
+
+# Local development
+.envrc
+.venv/
+
+# Docker
+.dockerenv
+
+# OS
+.DS_Store
+Thumbs.db
+>>>>>>> 36d2cf9fbc6319f638798696fbcb119bae3d9a9c

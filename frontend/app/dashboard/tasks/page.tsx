@@ -2,7 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+<<<<<<< HEAD
 import apiClient from '@/lib/api';
+=======
+import axios from 'axios';
+>>>>>>> 36d2cf9fbc6319f638798696fbcb119bae3d9a9c
 import TaskCard from '@/components/ui/TaskCard';
 import TaskForm from '@/components/ui/TaskForm';
 import { Task } from '@/lib/types';
@@ -25,7 +29,16 @@ export default function TasksPage() {
   // Fetch tasks
   const fetchTasks = async () => {
     try {
+<<<<<<< HEAD
       const response = await apiClient.get('/api/v1/tasks');
+=======
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_BASE_URL}/tasks`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+>>>>>>> 36d2cf9fbc6319f638798696fbcb119bae3d9a9c
       setTasks(response.data.tasks || response.data);
       setLoading(false);
     } catch (error: any) {
@@ -63,9 +76,22 @@ export default function TasksPage() {
 
   const handleToggleComplete = async (task: Task) => {
     try {
+<<<<<<< HEAD
       const response = await apiClient.patch(`/api/v1/tasks/${task.id}`, {
         complete: !task.complete
       });
+=======
+      const token = localStorage.getItem('token');
+      const response = await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/tasks/${task.id}`,
+        { complete: !task.complete },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+>>>>>>> 36d2cf9fbc6319f638798696fbcb119bae3d9a9c
 
       // Update the task in the UI
       setTasks(tasks.map(t =>

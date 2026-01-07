@@ -1,4 +1,5 @@
 import os
+<<<<<<< HEAD
 from dotenv import load_dotenv
 load_dotenv()  # Load environment variables from .env file
 
@@ -6,6 +7,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import SQLModel, create_engine
 from .api.v1 import auth, tasks, chat
+=======
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from sqlmodel import SQLModel, create_engine
+from .api.v1 import auth, tasks
+>>>>>>> 36d2cf9fbc6319f638798696fbcb119bae3d9a9c
 from .core.config import settings
 from .database.session import engine
 import uvicorn
@@ -24,7 +31,10 @@ app.add_middleware(
 # Include API routes
 app.include_router(auth.router, prefix="/api/v1", tags=["authentication"])
 app.include_router(tasks.router, prefix="/api/v1", tags=["tasks"])
+<<<<<<< HEAD
 app.include_router(chat.router, prefix="/api/v1", tags=["chat"])
+=======
+>>>>>>> 36d2cf9fbc6319f638798696fbcb119bae3d9a9c
 
 @app.on_event("startup")
 async def startup_event():

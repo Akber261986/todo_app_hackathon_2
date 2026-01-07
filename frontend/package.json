@@ -1,8 +1,14 @@
 {
+<<<<<<< HEAD
   "name": "todo-ai-chatbot-frontend",
   "version": "1.0.0",
   "description": "Frontend for the Todo AI Chatbot",
   "main": "index.js",
+=======
+  "name": "todo-frontend",
+  "version": "0.1.0",
+  "private": true,
+>>>>>>> 36d2cf9fbc6319f638798696fbcb119bae3d9a9c
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,6 +16,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@openai/chatkit": "latest",
     "@types/js-cookie": "^3.0.6",
     "autoprefixer": "^10.4.23",
@@ -29,3 +36,24 @@
     "typescript": "latest"
   }
 }
+=======
+    "next": "^16.0.0",
+    "react": "^19",
+    "react-dom": "^19",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5",
+    "better-auth": "^0.2.1",
+    "tailwindcss": "^3.3.0",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.31",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.1",
+    "eslint": "^9",
+    "eslint-config-next": "^16.0.0"
+  }
+}
+>>>>>>> 36d2cf9fbc6319f638798696fbcb119bae3d9a9c
