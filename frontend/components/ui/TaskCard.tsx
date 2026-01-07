@@ -24,22 +24,14 @@ export default function TaskCard({ task, onEdit, onDelete, onToggleComplete }: T
   };
 
   return (
-<<<<<<< HEAD
     <div className={`bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-200 hover:shadow-md ${task.complete ? 'bg-green-50 border-green-200' : ''}`}>
       <div className="p-5">
         <div className="flex items-start">
           <div className="flex items-center h-5 mt-1">
-=======
-    <div className={`bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-200 hover:shadow-md ${task.complete ? 'opacity-70' : ''}`}>
-      <div className="p-5">
-        <div className="flex items-start">
-          <div className="flex items-center h-5">
->>>>>>> 36d2cf9fbc6319f638798696fbcb119bae3d9a9c
             <input
               type="checkbox"
               checked={task.complete}
               onChange={() => onToggleComplete(task)}
-<<<<<<< HEAD
               className="h-5 w-5 text-green-500 border-gray-300 rounded focus:ring-green-500"
             />
           </div>
@@ -56,29 +48,13 @@ export default function TaskCard({ task, onEdit, onDelete, onToggleComplete }: T
             </div>
             {task.description && (
               <p className={`mt-2 text-sm ${task.complete ? 'text-green-600' : 'text-gray-500'}`}>
-=======
-              className="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-            />
-          </div>
-          <div className="ml-3 -mt-0.5">
-            <h3 className={`text-lg font-medium ${task.complete ? 'line-through text-gray-500' : 'text-gray-900'}`}>
-              {task.title}
-            </h3>
-            {task.description && (
-              <p className="mt-2 text-sm text-gray-500">
->>>>>>> 36d2cf9fbc6319f638798696fbcb119bae3d9a9c
                 {task.description}
               </p>
             )}
             <div className="mt-3 flex items-center justify-between">
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-<<<<<<< HEAD
                 task.complete
                   ? 'bg-green-100 text-green-800'
-=======
-                task.complete 
-                  ? 'bg-green-100 text-green-800' 
->>>>>>> 36d2cf9fbc6319f638798696fbcb119bae3d9a9c
                   : 'bg-yellow-100 text-yellow-800'
               }`}>
                 {task.complete ? 'Completed' : 'Pending'}
