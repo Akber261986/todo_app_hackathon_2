@@ -1,0 +1,34 @@
+name: list_tasks
+description: Retrieve tasks from the list
+input_schema:
+  type: object
+  properties:
+    user_id:
+      type: string
+      description: The user's identifier
+      required: true
+    status:
+      type: string
+      description: Filter tasks by status
+      enum: [all, pending, completed]
+      default: all
+  required:
+    - user_id
+output_schema:
+  type: array
+  items:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: The ID of the task
+      title:
+        type: string
+        description: The title of the task
+      completed:
+        type: boolean
+        description: Whether the task is completed
+    required:
+      - id
+      - title
+      - completed

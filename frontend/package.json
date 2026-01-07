@@ -1,0 +1,31 @@
+{
+  "name": "todo-ai-chatbot-frontend",
+  "version": "1.0.0",
+  "description": "Frontend for the Todo AI Chatbot",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@openai/chatkit": "latest",
+    "@types/js-cookie": "^3.0.6",
+    "autoprefixer": "^10.4.23",
+    "axios": "^1.13.2",
+    "js-cookie": "^3.0.5",
+    "next": "latest",
+    "postcss": "^8.5.6",
+    "react": "latest",
+    "react-cookie": "^8.0.1",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "tailwindcss": "^3.4.19",
+    "typescript": "latest"
+  }
+}

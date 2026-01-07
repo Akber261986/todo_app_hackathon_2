@@ -1,113 +1,194 @@
-# Console Todo Application - Hackathon Project
+# Full-Stack Todo Application - Hackathon II Project
 
-This is a console-based todo application developed as part of a hackathon project. It follows a specification-driven development approach with clean architecture principles.
+This is a multi-user full-stack todo application developed as part of a hackathon project. It follows a specification-driven development approach with clean architecture principles. The application features a Next.js frontend, FastAPI backend, Neon DB storage, and JWT authentication with Better Auth.
 
 ## Features
 
-- Add new tasks with title and optional description
-- View all tasks in a formatted table
-- Update existing tasks
-- Delete tasks
+- Multi-user support with authentication and user isolation
+- JWT-based authentication with Better Auth
+- Task management with CRUD operations
+- Responsive UI with Next.js App Router
+- Persistent storage with Neon DB
+- User registration and login
+- Create, read, update, and delete tasks
 - Mark tasks as complete/incomplete
-- Menu-driven interface with options 1-6
+- Secure token-based authentication
 
 ## Architecture
 
 The application follows a clean architecture pattern:
 
-- `src/models/task.py` - Task entity with validation
-- `src/services/todo_list.py` - Business logic for task operations
-- `src/ui/console_menu.py` - Console interface
-- `src/main.py` - Application entry point
+- `frontend/` - Next.js frontend with App Router
+- `backend/` - FastAPI backend with SQLModel ORM
+- `backend/app/models/` - SQLModel database models
+- `backend/app/schemas/` - Pydantic schemas for request/response validation
+- `backend/app/api/v1/` - API routes for authentication and tasks
+- `backend/app/auth/` - JWT authentication middleware
+- `frontend/app/(auth)/` - Authentication pages (signup/signin)
+- `frontend/app/dashboard/` - Main dashboard with task management
+- `frontend/components/ui/` - Reusable UI components
+- `frontend/lib/` - Shared utilities and types
 
 ## Requirements
 
-- Python 3.11+
-- Dependencies listed in `pyproject.toml`
+- Node.js 18+ (for frontend)
+- Python 3.11+ (for backend)
+- PostgreSQL-compatible database (Neon DB recommended)
+- Docker and Docker Compose (for containerized deployment)
 
 ## How to Run
 
-There are two ways to run the application:
+### Method 1: Using Docker Compose (Recommended)
 
-### Method 1: Using run_app.py (Recommended)
-```bash
-python run_app.py
-```
+1. Copy the environment template:
+   ```bash
+   cp .env.example .env
+   ```
 
-### Method 2: Using main.py directly
-```bash
-python src/main.py
-```
+2. Update the `.env` file with your database URL and other configurations
+
+3. Run the application:
+   ```bash
+   docker-compose up --build
+   ```
+
+The application will be available at:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000
+- Backend docs: http://localhost:8000/docs
+
+### Method 2: Running Manually
+
+#### Backend Setup
+
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+
+2. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Set environment variables:
+   ```bash
+   export DATABASE_URL="postgresql://user:password@localhost/dbname"
+   export BETTER_AUTH_SECRET="your-secret-key"
+   ```
+
+5. Run the backend:
+   ```bash
+   uvicorn app.main:app --reload --port 8000
+   ```
+
+#### Frontend Setup
+
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Create a `.env.local` file with your API configuration:
+   ```
+   NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1
+   ```
+
+4. Run the frontend:
+   ```bash
+   npm run dev
+   ```
 
 ## Project Structure
 
 ```
 todo_app_hackathon_2/
-├── .claude/               # Claude Code configuration
-├── .specify/              # Specification kit templates
-├── .spec-kit/             # Specification kit files
-├── history/               # Prompt history records
-├── specs/                 # Specification documents
-│   ├── constitution.md    # Project constitution
-│   ├── data-model.md      # Data model specification
-│   ├── overview.md        # Project overview
-│   ├── plan.md            # Implementation plan
-│   ├── research.md        # Research decisions
-│   └── features/          # Feature specifications
-├── src/                   # Source code
-│   ├── __init__.py
-│   ├── main.py            # Application entry point
-│   ├── models/            # Data models
-│   │   ├── __init__.py
-│   │   └── task.py        # Task class
-│   ├── services/          # Business logic
-│   │   ├── __init__.py
-│   │   └── todo_list.py   # TodoList class
-│   └── ui/                # User interface
-│       ├── __init__.py
-│       └── console_menu.py # Console menu interface
-├── test_todo_app.py       # Test script
-├── run_app.py             # Application runner script
-├── pyproject.toml         # Project dependencies and configuration
-└── README.md              # This file
+├── backend/                 # FastAPI backend
+│   ├── app/                # Application code
+│   │   ├── main.py         # Application entry point
+│   │   ├── api/            # API routes
+│   │   │   └── v1/         # API version 1
+│   │   │       ├── auth.py # Authentication endpoints
+│   │   │       └── tasks.py # Task endpoints
+│   │   ├── models/         # Database models
+│   │   │   ├── user.py    # User model
+│   │   │   └── task.py    # Task model
+│   │   ├── schemas/        # Pydantic schemas
+│   │   │   ├── user.py    # User schemas
+│   │   │   └── task.py    # Task schemas
+│   │   ├── database/       # Database configuration
+│   │   ├── auth/           # Authentication utilities
+│   │   └── core/           # Core configuration
+│   ├── requirements.txt    # Backend dependencies
+│   └── alembic/            # Database migrations
+├── frontend/               # Next.js frontend
+│   ├── app/               # App Router pages
+│   │   ├── (auth)/        # Authentication pages
+│   │   │   ├── signup/    # Signup page
+│   │   │   └── signin/    # Signin page
+│   │   ├── dashboard/     # Dashboard pages
+│   │   │   ├── tasks/     # Tasks page
+│   │   │   └── layout.tsx # Dashboard layout
+│   │   ├── layout.tsx     # Root layout
+│   │   └── page.tsx       # Home page
+│   ├── components/        # Reusable components
+│   │   ├── ui/           # UI components
+│   │   └── auth/         # Authentication components
+│   ├── lib/               # Shared utilities
+│   │   ├── auth.ts       # Authentication context
+│   │   ├── api.ts        # API client
+│   │   └── types.ts      # Type definitions
+│   ├── public/            # Static assets
+│   └── package.json       # Frontend dependencies
+├── docker-compose.yml     # Docker configuration
+├── .env.example          # Environment variables template
+└── README.md             # This file
 ```
 
-## Dependencies
+## API Endpoints
 
-The project uses the following dependencies (defined in `pyproject.toml`):
-- FastAPI
-- uvicorn
-- SQLAlchemy
-- asyncpg
-- Pydantic
-- python-multipart
-- passlib[bcrypt]
-- python-jose[cryptography]
-- pytest
-- httpx
-- And development tools (black, flake8, mypy, etc.)
+### Authentication
+- `POST /api/v1/auth/signup` - Create new user
+- `POST /api/v1/auth/signin` - User login
+- `POST /api/v1/auth/signout` - User logout
+
+### Tasks
+- `GET /api/v1/tasks` - Get all user's tasks
+- `POST /api/v1/tasks` - Create new task
+- `GET /api/v1/tasks/{task_id}` - Get specific task
+- `PUT /api/v1/tasks/{task_id}` - Update task
+- `PATCH /api/v1/tasks/{task_id}` - Update task status
+- `DELETE /api/v1/tasks/{task_id}` - Delete task
 
 ## Testing
 
-To run the tests:
-
+### Backend Tests
 ```bash
-python test_todo_app.py
+cd backend
+pytest
 ```
 
-Or using pytest:
+### Frontend Tests
 ```bash
-pytest test_todo_app.py
+cd frontend
+npm test
 ```
 
-## Project Status
+## Deployment
 
-This implementation includes:
-
-- Task model with validation (id, title, description, status)
-- In-memory storage using TodoList class
-- Menu-driven console interface with options 1-6
-- Complete CRUD operations
-- Error handling for invalid inputs
-- Auto-incrementing task IDs
-- Formatted table display of tasks
+For production deployment, ensure the following environment variables are set:
+- `DATABASE_URL` - PostgreSQL-compatible database URL
+- `BETTER_AUTH_SECRET` - Strong secret for JWT signing (32+ characters)
+- `NEXT_PUBLIC_API_BASE_URL` - Backend API URL for frontend
+- `NEXTAUTH_URL` - Application base URL
