@@ -15,7 +15,7 @@ app = FastAPI(title="Todo App API", version="1.0.0")
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, replace with specific origins
+    allow_origins=["*"],  # Allow all origins for flexibility
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
