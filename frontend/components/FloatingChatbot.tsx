@@ -12,8 +12,6 @@ interface Message {
   isError?: boolean;
 }
 
-type MessageRole = 'user' | 'assistant';
-
 interface Conversation {
   id: string;
   title: string;
@@ -31,7 +29,6 @@ const FloatingChatbot = () => {
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [cookies] = useCookies(['token']);
   const { token } = useAuth();
 
   const scrollToBottom = () => {

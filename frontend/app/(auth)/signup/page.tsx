@@ -36,11 +36,11 @@ export default function SignUpPage() {
 
       const { access_token } = response.data;
 
-      // Set cookie with 24-hour expiration
+      // Set cookie with 24-hour expiration - allow cross-origin for deployed version
       setCookie('token', access_token, {
         path: '/',
         maxAge: 24 * 60 * 60, // 24 hours in seconds
-        sameSite: true,
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
         secure: process.env.NODE_ENV === 'production'
       });
 
