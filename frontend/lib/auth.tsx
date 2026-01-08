@@ -62,8 +62,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       path: '/',
       maxAge: 24 * 60 * 60, // 24 hours in seconds
       sameSite: 'none', // Always use 'none' to allow cross-site usage
-      secure: true, // Always use secure in production
-      httpOnly: false, // Allow client-side access
+      secure: process.env.NODE_ENV === 'production', // Secure only in production
+      httpOnly: false, // Keep false for client-side access (required for JWT)
     });
     setToken(access_token);
 
@@ -98,8 +98,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       path: '/',
       maxAge: 24 * 60 * 60, // 24 hours in seconds
       sameSite: 'none', // Always use 'none' to allow cross-site usage
-      secure: true, // Always use secure in production
-      httpOnly: false, // Allow client-side access
+      secure: process.env.NODE_ENV === 'production', // Secure only in production
+      httpOnly: false, // Keep false for client-side access (required for JWT)
     });
     setToken(access_token);
 

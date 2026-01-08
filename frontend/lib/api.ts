@@ -8,7 +8,7 @@ const isBrowser = typeof window !== 'undefined';
 // Create an axios instance
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || '',
-  withCredentials: false,  // Disable credentials since we're using headers
+  withCredentials: false,  // Keep false since we use Authorization headers
 });
 
 // Add a request interceptor to include the JWT token in headers
