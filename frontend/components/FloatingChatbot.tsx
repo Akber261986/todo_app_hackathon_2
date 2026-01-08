@@ -134,6 +134,7 @@ const FloatingChatbot = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
         },
+        credentials: 'include', // Include credentials for cross-origin requests
         body: JSON.stringify({
           message: inputValue,
           conversation_id: currentConversationId || undefined, // Send conversation ID if available
