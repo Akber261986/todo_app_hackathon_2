@@ -8,7 +8,7 @@ const isBrowser = typeof window !== 'undefined';
 // Create an axios instance
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || '',
-  withCredentials: true,  // Enable credentials for cross-origin requests
+  withCredentials: false,  // Disable credentials since we're using headers
 });
 
 // Add a request interceptor to include the JWT token in headers
@@ -26,8 +26,7 @@ apiClient.interceptors.request.use(
         config.headers.Authorization = `Bearer ${token}`;
       }
 
-      // Ensure credentials are included for cross-origin requests
-      config.withCredentials = true;
+      // Don't override withCredentials since we're using headers instead of cookies for requests
     }
     return config;
   },
@@ -45,7 +44,7 @@ apiClient.interceptors.response.use(
     // If token is invalid/expired, redirect to login (only in browser)
     if (error.response?.status === 401 && isBrowser) {
       // Remove the token cookie by setting its expiration to the past
-      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; samesite=none; secure';
+      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
       window.location.href = '/signin';
     }
     return Promise.reject(error);

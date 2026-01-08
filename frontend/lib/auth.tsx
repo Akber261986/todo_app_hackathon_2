@@ -61,8 +61,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setCookie('token', access_token, {
       path: '/',
       maxAge: 24 * 60 * 60, // 24 hours in seconds
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      secure: process.env.NODE_ENV === 'production'
+      sameSite: 'none', // Always use 'none' to allow cross-site usage
+      secure: true, // Always use secure in production
+      httpOnly: false, // Allow client-side access
     });
     setToken(access_token);
 
@@ -96,8 +97,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setCookie('token', access_token, {
       path: '/',
       maxAge: 24 * 60 * 60, // 24 hours in seconds
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      secure: process.env.NODE_ENV === 'production'
+      sameSite: 'none', // Always use 'none' to allow cross-site usage
+      secure: true, // Always use secure in production
+      httpOnly: false, // Allow client-side access
     });
     setToken(access_token);
 
