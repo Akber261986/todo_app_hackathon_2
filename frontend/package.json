@@ -4,6 +4,9 @@
   "description": "Frontend for the Todo AI Chatbot",
   "main": "index.js",
   "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
