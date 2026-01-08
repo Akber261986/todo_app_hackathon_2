@@ -1,14 +1,33 @@
-'use server';
+import Link from 'next/link';
 
-import { checkAuth } from '../lib/auth-server';
-import { redirect } from 'next/navigation';
-
-export default async function HomePage() {
-  const isAuthenticated = await checkAuth();
-  
-  if (isAuthenticated) {
-    redirect('/dashboard');
-  } else {
-    redirect('/signin');
-  }
+export default async function Home() {
+  // The middleware handles authentication redirects
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-lg">
+        <div className="text-center">
+          <h1 className="text-3xl font-extrabold text-gray-900 mb-4">
+            Welcome to Todo App
+          </h1>
+          <p className="text-gray-600 mb-8">
+            Manage your tasks efficiently and boost your productivity
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link 
+              href="/signin" 
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300"
+            >
+              Sign In
+            </Link>
+            <Link 
+              href="/signup" 
+              className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition duration-300"
+            >
+              Sign Up
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
