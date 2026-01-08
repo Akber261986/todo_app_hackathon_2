@@ -17,15 +17,20 @@ export default function DashboardPage() {
   const [cookies, , removeCookie] = useCookies(['token']);
   const router = useRouter();
 
+  const [authChecked, setAuthChecked] = useState(false);
+
   // Check if user is authenticated
   useEffect(() => {
     const token = cookies.token;
     if (!token) {
       router.push('/signin');
+      setAuthChecked(true); // Set auth as checked even if redirecting
+      return;
     }
+    setAuthChecked(true); // User is authenticated
   }, [cookies.token, router]);
 
-  // Fetch tasks
+  // Fetch tasks only after auth is checked
   const fetchTasks = async () => {
     try {
       const response = await apiClient.get('/api/v1/tasks');
@@ -41,8 +46,10 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
-    fetchTasks();
-  }, []);
+    if (authChecked) {
+      fetchTasks();
+    }
+  }, [authChecked]);
 
   const handleTaskCreated = (newTask: Task) => {
     setTasks([...tasks, newTask]);

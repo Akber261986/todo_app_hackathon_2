@@ -17,7 +17,12 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://todo-app-hackathon-2.vercel.app",
-        "http://localhost:3000"  # Keep for local development
+        "http://localhost:3000",  # Common Next.js dev port
+        "http://localhost:3001",  # Alternative Next.js dev port
+        "http://localhost:3002",  # Another common port
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:3001",
+        "http://127.0.0.1:3002",
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],

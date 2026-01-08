@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCookies } from 'react-cookie';
 import Link from 'next/link';
@@ -14,8 +14,16 @@ export default function SignUpPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [togglePassword, setTogglePassword] = useState(false);
-  const [, setCookie] = useCookies(['token']);
+  const [cookies, setCookie] = useCookies(['token']);
   const router = useRouter();
+
+  // Check if user is already authenticated and redirect to dashboard
+  useEffect(() => {
+    const token = cookies.token;
+    if (token) {
+      router.push('/dashboard');
+    }
+  }, [cookies, router]);
 
   const togglePasswordVisibility = () => {
     setTogglePassword(!togglePassword);
