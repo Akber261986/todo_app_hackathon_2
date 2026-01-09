@@ -7,7 +7,7 @@ const isBrowser = typeof window !== 'undefined';
 
 // Create an axios instance
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL || '',
+  baseURL: 'https://web-production-todoapp.up.railway.app',  // Hardcoded backend URL
   withCredentials: false,  // Keep false since we use Authorization headers
 });
 
