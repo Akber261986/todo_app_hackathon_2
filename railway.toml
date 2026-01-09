@@ -12,8 +12,8 @@ builder = "NIXPACKS"
   # Install system dependencies (similar to Dockerfile)
   pkgs = ["gcc", "postgresql"]
 
-  # Install requirements
-  installCmd = "pip install --no-cache-dir -r backend/requirements.txt"
+  # Install requirements from backend directory
+  installCmd = "cd backend && pip install --no-cache-dir -r requirements.txt"
 
   # Start command for the backend (Procfile takes precedence if it exists)
   startCmd = "cd backend && python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT"
