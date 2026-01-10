@@ -338,28 +338,110 @@ except ImportError:
                 if any(word in lower_input for word in ['complete', 'done', 'finish', 'completed']):
                     result = update_task_enhanced(user_id, task_id, complete=True)
                 else:
-                    return "To update a task, please specify what you'd like to change. For example: 'Update task 123 to mark as complete' or 'Change task 123 title to new title'"
+                    # Check for title/description updates
+                    # Pattern: update task ID to title: new title or description: new description
+                    title_pattern = r'(?:title|name):\s*(.+)'
+                    desc_pattern = r'(?:description|desc|dis):\s*(.+)'
+
+                    new_title = re.search(title_pattern, user_input, re.IGNORECASE)
+                    new_description = re.search(desc_pattern, user_input, re.IGNORECASE)
+
+                    if new_title or new_description:
+                        title_val = new_title.group(1).strip() if new_title else None
+                        desc_val = new_description.group(1).strip() if new_description else None
+                        result = update_task_enhanced(user_id, task_id, title=title_val, description=desc_val)
+                    else:
+                        return "To update a task, please specify what you'd like to change. For example: 'Update task 123 to mark as complete' or 'Update task 123 title: new title'"
 
                 if isinstance(result, dict) and "error" in result:
                     return f"Error updating task: {result['error']}"
                 return f"Task {result['id']} has been updated successfully."
             else:
                 # If no UUID found, try to find by title
-                # Extract potential title after update/change/modify keywords
-                title_patterns = [
-                    r'(?:update|change|modify)\s+(?:task\s+)?(?:named\s+|with\s+name\s+|name:\s*)?(.+?)(?:\s+(?:to|and)|$)',
-                    r'(?:update|change|modify)\s+(?:the\s+)?(?:task\s+)?(?:named\s+|with\s+name\s+|name:\s*)?(.+?)(?:\s+(?:to|and)|$)'
-                ]
+                # Handle various update patterns including "update task class 1 to complete" or "update task class 1 title: new title"
 
-                extracted_title = None
-                for pattern in title_patterns:
-                    match = re.search(pattern, user_input, re.IGNORECASE)
-                    if match:
-                        extracted_title = match.group(1).strip()
-                        break
+                # Pattern 1: update task title to complete/mark as done
+                pattern1 = r'(?:update|change|modify)\s+(?:task|the\s+task)\s+(.+?)\s+(?:to\s+complete|to\s+done|and\s+mark\s+as\s+complete|and\s+complete|to\s+be\s+complete)'
+                match1 = re.search(pattern1, user_input, re.IGNORECASE)
 
-                if not extracted_title:
-                    # Check for completion request without explicit title
+                # Pattern 2: update task title with new title or description
+                pattern2 = r'(?:update|change|modify)\s+(?:task|the\s+task)\s+(.+?)\s+(?:title|name):\s*(.+?)(?:\s+(?:and|with)\s+(?:description|desc|dis):\s*(.+)|$)'
+                match2 = re.search(pattern2, user_input, re.IGNORECASE)
+
+                # Pattern 3: update task title with new description only
+                pattern3 = r'(?:update|change|modify)\s+(?:task|the\s+task)\s+(.+?)\s+(?:description|desc|dis):\s*(.+)'
+                match3 = re.search(pattern3, user_input, re.IGNORECASE)
+
+                if match1:
+                    # Update task to complete
+                    extracted_title = match1.group(1).strip()
+                    tasks = get_user_tasks_enhanced(user_id)
+                    if isinstance(tasks, list):
+                        matching_task = None
+                        for task in tasks:
+                            if isinstance(task, dict) and task.get('title', '').lower() == extracted_title.lower():
+                                matching_task = task
+                                break
+
+                        if matching_task:
+                            result = update_task_enhanced(user_id, matching_task['id'], complete=True)
+                            if isinstance(result, dict) and "error" in result:
+                                return f"Error updating task: {result['error']}"
+                            return f"Task '{matching_task['title']}' has been marked as complete."
+                        else:
+                            return f"I couldn't find a task titled '{extracted_title}'. Could you please specify the exact task title or provide the task ID?"
+                    else:
+                        return f"Error accessing your tasks: {tasks.get('error', 'Unknown error')}"
+
+                elif match2:
+                    # Update task title and optionally description
+                    extracted_title = match2.group(1).strip()
+                    new_title = match2.group(2).strip()
+                    new_description = match2.group(3).strip() if match2.group(3) else None
+
+                    tasks = get_user_tasks_enhanced(user_id)
+                    if isinstance(tasks, list):
+                        matching_task = None
+                        for task in tasks:
+                            if isinstance(task, dict) and task.get('title', '').lower() == extracted_title.lower():
+                                matching_task = task
+                                break
+
+                        if matching_task:
+                            result = update_task_enhanced(user_id, matching_task['id'], title=new_title, description=new_description)
+                            if isinstance(result, dict) and "error" in result:
+                                return f"Error updating task: {result['error']}"
+                            return f"Task '{matching_task['title']}' has been updated successfully."
+                        else:
+                            return f"I couldn't find a task titled '{extracted_title}'. Could you please specify the exact task title or provide the task ID?"
+                    else:
+                        return f"Error accessing your tasks: {tasks.get('error', 'Unknown error')}"
+
+                elif match3:
+                    # Update task description only
+                    extracted_title = match3.group(1).strip()
+                    new_description = match3.group(2).strip()
+
+                    tasks = get_user_tasks_enhanced(user_id)
+                    if isinstance(tasks, list):
+                        matching_task = None
+                        for task in tasks:
+                            if isinstance(task, dict) and task.get('title', '').lower() == extracted_title.lower():
+                                matching_task = task
+                                break
+
+                        if matching_task:
+                            result = update_task_enhanced(user_id, matching_task['id'], description=new_description)
+                            if isinstance(result, dict) and "error" in result:
+                                return f"Error updating task: {result['error']}"
+                            return f"Task '{matching_task['title']}' has been updated successfully."
+                        else:
+                            return f"I couldn't find a task titled '{extracted_title}'. Could you please specify the exact task title or provide the task ID?"
+                    else:
+                        return f"Error accessing your tasks: {tasks.get('error', 'Unknown error')}"
+
+                else:
+                    # Check for completion request without explicit title (mark most recent incomplete task as complete)
                     if any(word in lower_input for word in ['complete', 'done', 'finish', 'completed']):
                         # Try to find the most recent incomplete task
                         tasks = get_user_tasks_enhanced(user_id)
@@ -372,31 +454,38 @@ except ImportError:
                                         return f"Error updating task: {result['error']}"
                                     return f"Task '{task['title']}' has been marked as complete."
 
-                if extracted_title:
-                    # Find the task by title
-                    tasks = get_user_tasks_enhanced(user_id)
-                    if isinstance(tasks, list):
-                        matching_task = None
-                        for task in tasks:
-                            if isinstance(task, dict) and task.get('title', '').lower() == extracted_title.lower():
-                                matching_task = task
-                                break
+                    # If no specific pattern matched, try to find task by title only
+                    # Extract potential title after update/change/modify keywords
+                    title_patterns = [
+                        r'(?:update|change|modify)\s+(?:task\s+)?(?:named\s+|with\s+name\s+|name:\s*)?(.+?)(?:\s+(?:to|and)|$)',
+                        r'(?:update|change|modify)\s+(?:the\s+)?(?:task\s+)?(?:named\s+|with\s+name\s+|name:\s*)?(.+?)(?:\s+(?:to|and)|$)'
+                    ]
 
-                        if matching_task:
-                            # Check if user wants to mark as complete
-                            if any(word in lower_input for word in ['complete', 'done', 'finish', 'completed']):
-                                result = update_task_enhanced(user_id, matching_task['id'], complete=True)
-                                if isinstance(result, dict) and "error" in result:
-                                    return f"Error updating task: {result['error']}"
-                                return f"Task '{matching_task['title']}' has been marked as complete."
+                    extracted_title = None
+                    for pattern in title_patterns:
+                        match = re.search(pattern, user_input, re.IGNORECASE)
+                        if match:
+                            extracted_title = match.group(1).strip()
+                            break
+
+                    if extracted_title:
+                        # Find the task by title
+                        tasks = get_user_tasks_enhanced(user_id)
+                        if isinstance(tasks, list):
+                            matching_task = None
+                            for task in tasks:
+                                if isinstance(task, dict) and task.get('title', '').lower() == extracted_title.lower():
+                                    matching_task = task
+                                    break
+
+                            if matching_task:
+                                return f"To update task '{matching_task['title']}', please specify what you'd like to change. For example: 'Update task {matching_task['title']} to complete' or 'Update task {matching_task['title']} title: new title'"
                             else:
-                                return f"To update task '{matching_task['title']}', please specify what you'd like to change. For example: 'Update task {matching_task['title']} to mark as complete'"
+                                return f"I couldn't find a task titled '{extracted_title}'. Could you please specify the exact task title or provide the task ID?"
                         else:
-                            return f"I couldn't find a task titled '{extracted_title}'. Could you please specify the exact task title or provide the task ID?"
-                    else:
-                        return f"Error accessing your tasks: {tasks.get('error', 'Unknown error')}"
+                            return f"Error accessing your tasks: {tasks.get('error', 'Unknown error')}"
 
-                return "To update a task, please specify the task ID or exact title. For example: 'Update task 123 to mark as complete'"
+                return "To update a task, please specify the task ID or exact title. For example: 'Update task 123 to complete' or 'Update task class 1 title: new title'"
 
         # Handle task deletion
         elif any(keyword in lower_input for keyword in ['delete', 'remove', 'cancel']):
