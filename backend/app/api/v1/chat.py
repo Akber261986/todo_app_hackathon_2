@@ -280,26 +280,46 @@ except ImportError:
         # Handle task creation
         elif any(keyword in lower_input for keyword in ['create', 'add', 'new', 'make']):
             # Extract task title and description from user input
-            # Look for common patterns like "create task to..." or "create a task to..."
-            create_patterns = [
-                r'create\s+(?:a\s+)?(?:task|todo)\s+to\s+(.+?)(?:\s+and\s+.*)?$',
-                r'add\s+(?:a\s+)?(?:task|todo)\s+to\s+(.+?)(?:\s+and\s+.*)?$',
-                r'make\s+(?:a\s+)?(?:task|todo)\s+to\s+(.+?)(?:\s+and\s+.*)?$',
-                r'new\s+(?:task|todo)\s+(?:to|for)\s+(.+?)(?:\s+and\s+.*)?$'
-            ]
+            # Handle multiple patterns including "add a task class 1 dis: 2pm"
 
-            title = None
-            for pattern in create_patterns:
-                match = re.search(pattern, user_input, re.IGNORECASE)
-                if match:
-                    title = match.group(1).strip()
-                    break
+            # Pattern 1: "add task class 1 dis: 2pm" or "add a task class 1 dis: 2pm"
+            pattern1 = r'(?:add|create|make|new)\s+(?:a\s+)?(?:task|todo)\s+(.+?)\s+(?:dis:|description:|desc:)\s*(.+)'
+            match1 = re.search(pattern1, user_input, re.IGNORECASE)
+
+            if match1:
+                title = match1.group(1).strip()
+                description = match1.group(2).strip()
+            else:
+                # Pattern 2: "add task class 1" or similar
+                pattern2 = r'(?:add|create|make|new)\s+(?:a\s+)?(?:task|todo)\s+(.+?)(?:\s+|$)'
+                match2 = re.search(pattern2, user_input, re.IGNORECASE)
+
+                if match2:
+                    title = match2.group(1).strip()
+                    description = None
+                else:
+                    # Pattern 3: "create task to..." or "add task to..." (original patterns)
+                    create_patterns = [
+                        r'create\s+(?:a\s+)?(?:task|todo)\s+to\s+(.+?)(?:\s+and\s+.*)?$',
+                        r'add\s+(?:a\s+)?(?:task|todo)\s+to\s+(.+?)(?:\s+and\s+.*)?$',
+                        r'make\s+(?:a\s+)?(?:task|todo)\s+to\s+(.+?)(?:\s+and\s+.*)?$',
+                        r'new\s+(?:task|todo)\s+(?:to|for)\s+(.+?)(?:\s+and\s+.*)?$'
+                    ]
+
+                    title = None
+                    for pattern in create_patterns:
+                        match = re.search(pattern, user_input, re.IGNORECASE)
+                        if match:
+                            title = match.group(1).strip()
+                            break
+
+                    description = None
 
             if not title:
                 # If we can't extract a title, ask the user for clarification
-                return "I'd be happy to create a task for you. Please specify what task you'd like to create. For example: 'Create a task to buy groceries'"
+                return "I'd be happy to create a task for you. Please specify what task you'd like to create. For example: 'Add a task class 1' or 'Add a task class 1 dis: 2pm'"
 
-            result = create_task_enhanced(user_id, title=title)
+            result = create_task_enhanced(user_id, title=title, description=description)
             if isinstance(result, dict) and "error" in result:
                 return f"Error creating task: {result['error']}"
 
