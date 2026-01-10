@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCookies } from 'react-cookie';
 import apiClient from '@/lib/api';
@@ -16,6 +16,7 @@ export default function DashboardPage() {
   const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
   const [cookies, , removeCookie] = useCookies(['token']);
   const router = useRouter();
+  const taskFormRef = useRef<HTMLDivElement>(null);
 
   const [authChecked, setAuthChecked] = useState(false);
 
@@ -69,6 +70,16 @@ export default function DashboardPage() {
   const handleEditTask = (task: Task) => {
     setEditingTask(task);
     setShowForm(true);
+
+    // Scroll to the task form after a brief delay to ensure it's rendered
+    setTimeout(() => {
+      if (taskFormRef.current) {
+        taskFormRef.current.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+    }, 100);
   };
 
   const handleToggleComplete = async (task: Task) => {
@@ -241,7 +252,7 @@ export default function DashboardPage() {
           </div>
 
           {showForm && (
-            <div className="mb-6">
+            <div ref={taskFormRef} className="mb-6">
               <TaskForm
                 task={editingTask}
                 onSubmit={editingTask ? handleTaskUpdated : handleTaskCreated}
