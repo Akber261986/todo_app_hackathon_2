@@ -32,14 +32,24 @@ try:
     # Global variable to store current user context
     current_user_context = {}
 
-    # Function to interact with the Gemini model
-    async def call_gemini_api(prompt: str) -> str:
+    # Function to interact with the Gemini model (synchronous version for better compatibility)
+    def call_gemini_api_sync(prompt: str) -> str:
         try:
-            response = await gemini_model.generate_content_async(prompt)
+            response = gemini_model.generate_content(prompt)
             return response.text if response.text else "I couldn't generate a response. Please try again."
         except Exception as e:
             print(f"Error calling Gemini API: {str(e)}")
             return f"I'm having trouble connecting to the AI service. Error: {str(e)}"
+
+    # Async wrapper for compatibility
+    import asyncio
+    from concurrent.futures import ThreadPoolExecutor
+
+    executor = ThreadPoolExecutor(max_workers=4)
+
+    async def call_gemini_api(prompt: str) -> str:
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(executor, call_gemini_api_sync, prompt)
 
     # Enhanced functions for task management
     def get_user_tasks_enhanced(user_id: str) -> List[dict]:
