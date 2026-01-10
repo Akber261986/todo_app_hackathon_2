@@ -18,10 +18,16 @@ try:
     from agents import Agent, Runner, function_tool
     from agents.extensions.models.litellm_model import LitellmModel
 
+    # Check if GEMINI_API_KEY is available
+    gemini_api_key = os.getenv("GEMINI_API_KEY")
+    if not gemini_api_key:
+        print("Warning: GEMINI_API_KEY environment variable is not set")
+        raise ImportError("GEMINI_API_KEY not set")
+
     # Configure Gemini model via LiteLLM
     gemini_model = LitellmModel(
         model="gemini/gemini-2.5-flash",
-        api_key=os.getenv("GEMINI_API_KEY"),
+        api_key=gemini_api_key,
     )
 
     # Define tools that the agent can use
@@ -330,9 +336,10 @@ try:
             return {"error": f"Error deleting task: {str(e)}"}
 
     # Create the agent with Gemini model and enhanced task management tools
-    assistant_agent = Agent(
-        name="Todo Assistant",
-        instructions="""You are a helpful Todo AI assistant powered by Google Gemini. You help users manage their tasks and productivity. You can:
+    try:
+        assistant_agent = Agent(
+            name="Todo Assistant",
+            instructions="""You are a helpful Todo AI assistant powered by Google Gemini. You help users manage their tasks and productivity. You can:
 - Answer questions about task management and productivity
 - Create, update, delete, and list tasks for users
 - Provide productivity tips and time management advice
@@ -343,12 +350,16 @@ try:
 Be concise, helpful, and if user ask something else reply a short answer then focused on productivity and task management in your responses. If asked about capabilities beyond task management, politely redirect to productivity topics.
 
 When users ask to create, update, delete, or list tasks, use the appropriate tools to perform these actions. You have access to the user context automatically, so you don't need to ask for user IDs.""",
-        model=gemini_model,
-        tools=[get_user_tasks_enhanced, create_task_enhanced, update_task_enhanced, delete_task_enhanced],
-    )
-
-    AGENTS_AVAILABLE = True
-except ImportError:
+            model=gemini_model,
+            tools=[get_user_tasks_enhanced, create_task_enhanced, update_task_enhanced, delete_task_enhanced],
+        )
+        AGENTS_AVAILABLE = True
+    except Exception as e:
+        print(f"Error creating assistant agent: {str(e)}")
+        AGENTS_AVAILABLE = False
+        assistant_agent = None
+except ImportError as e:
+    print(f"Import error in chat module: {str(e)}")
     AGENTS_AVAILABLE = False
     assistant_agent = None
 
@@ -375,7 +386,9 @@ async def chat(
 ):
     """Send a message to the AI agent and get a response with conversation state maintained."""
     if not AGENTS_AVAILABLE:
-        raise HTTPException(status_code=500, detail="AI agents library not available")
+        # Return a helpful error message instead of a generic 500 error
+        error_response = "I'm sorry, but the AI assistant is currently unavailable. Please try again later."
+        return ChatResponse(response=error_response, conversation_id=str(uuid.uuid4()))
 
     try:
         # Set the global user context for the function tools
@@ -393,7 +406,10 @@ async def chat(
 
         return ChatResponse(response=response, conversation_id=conversation_id)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        # Log the actual error for debugging purposes
+        print(f"Chat endpoint error: {str(e)}")
+        error_response = "I'm sorry, I encountered an error processing your request. Please try again."
+        return ChatResponse(response=error_response, conversation_id=str(uuid.uuid4()))
 
 @router.delete("/chat/{conversation_id}")
 async def end_conversation(

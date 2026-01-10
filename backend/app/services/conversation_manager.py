@@ -95,7 +95,7 @@ class ConversationManager:
         Returns:
             Tuple of (response, conversation_id)
         """
-        if not AGENTS_AVAILABLE:
+        if not AGENTS_AVAILABLE or self.agent is None:
             return "AI agents library not available", conversation_id or str(int(time.time()))
 
         # Get or create conversation
