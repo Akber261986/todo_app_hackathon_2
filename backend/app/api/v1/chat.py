@@ -38,7 +38,7 @@ try:
             response = gemini_model.generate_content(prompt)
             return response.text if response.text else "I couldn't generate a response. Please try again."
         except Exception as e:
-            print(f"Error calling Gemini API: {str(e)}")
+            print(f"Error calling Gemini API with library: {str(e)}")
             return f"I'm having trouble connecting to the AI service. Error: {str(e)}"
 
     # Async wrapper for compatibility
@@ -50,6 +50,83 @@ try:
     async def call_gemini_api(prompt: str) -> str:
         loop = asyncio.get_event_loop()
         return await loop.run_in_executor(executor, call_gemini_api_sync, prompt)
+
+except ImportError:
+    # Fallback implementation using direct HTTP requests to Gemini API
+    import json
+    import httpx
+    import asyncio
+    from concurrent.futures import ThreadPoolExecutor
+
+    gemini_api_key = os.getenv("GEMINI_API_KEY")
+    if not gemini_api_key:
+        print("Warning: GEMINI_API_KEY environment variable is not set")
+        gemini_api_key = None
+
+    executor = ThreadPoolExecutor(max_workers=4)
+
+    def call_gemini_api_sync_http(prompt: str) -> str:
+        if not gemini_api_key:
+            return "Gemini API key is not configured. Please contact the administrator."
+
+        try:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={gemini_api_key}"
+
+            headers = {
+                "Content-Type": "application/json"
+            }
+
+            payload = {
+                "contents": [{
+                    "parts": [{
+                        "text": prompt
+                    }]
+                }],
+                "generationConfig": {
+                    "temperature": 0.7,
+                    "maxOutputTokens": 1000,
+                    "topK": 40,
+                    "topP": 0.95
+                }
+            }
+
+            response = httpx.post(url, headers=headers, json=payload, timeout=30.0)
+
+            if response.status_code == 200:
+                data = response.json()
+                candidates = data.get('candidates', [])
+
+                if candidates:
+                    content = candidates[0].get('content', {})
+                    parts = content.get('parts', [])
+
+                    if parts:
+                        return parts[0].get('text', "I couldn't generate a response. Please try again.")
+
+                return "I couldn't generate a complete response. Please try again."
+            else:
+                error_detail = response.text if response.text else f"HTTP {response.status_code}"
+                print(f"Gemini API error: {response.status_code} - {error_detail}")
+                return f"I'm having trouble connecting to the AI service. Status: {response.status_code}"
+
+        except httpx.TimeoutException:
+            print("Gemini API timeout error")
+            return "The AI service is taking too long to respond. Please try again."
+        except Exception as e:
+            print(f"Error calling Gemini API with HTTP: {str(e)}")
+            return f"I'm having trouble connecting to the AI service. Error: {str(e)}"
+
+    async def call_gemini_api(prompt: str) -> str:
+        if gemini_api_key:
+            loop = asyncio.get_event_loop()
+            return await loop.run_in_executor(executor, call_gemini_api_sync_http, prompt)
+        else:
+            return "Gemini API key is not configured. Please contact the administrator."
+
+    # Global variable to store current user context
+    current_user_context = {}
+
+    AGENTS_AVAILABLE = True
 
     # Enhanced functions for task management
     def get_user_tasks_enhanced(user_id: str) -> List[dict]:
