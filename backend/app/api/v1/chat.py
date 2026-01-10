@@ -11,12 +11,11 @@ from ...models.user import User
 from ...models.task import Task
 from ...schemas.task import TaskCreate, TaskUpdate, TaskResponse
 from ...database.session import engine
-from ...services.conversation_manager import get_conversation_manager
 
-# Only import if the required dependencies are available
+# Try to import Google Generative AI library for direct Gemini API access
 try:
-    from agents import Agent, Runner, function_tool
-    from agents.extensions.models.litellm_model import LitellmModel
+    import google.generativeai as genai
+    from typing import Dict, Any
 
     # Check if GEMINI_API_KEY is available
     gemini_api_key = os.getenv("GEMINI_API_KEY")
@@ -24,167 +23,27 @@ try:
         print("Warning: GEMINI_API_KEY environment variable is not set")
         raise ImportError("GEMINI_API_KEY not set")
 
-    # Configure Gemini model via LiteLLM
-    gemini_model = LitellmModel(
-        model="gemini/gemini-2.5-flash",
-        api_key=gemini_api_key,
-    )
+    # Configure the Gemini API
+    genai.configure(api_key=gemini_api_key)
 
-    # Define tools that the agent can use
-
-    @function_tool
-    def get_user_tasks(user_id: str) -> List[dict]:
-        """Get all tasks for the current user.
-
-        Args:
-            user_id: The UUID of the user whose tasks to retrieve.
-        """
-        try:
-            with Session(engine) as session:
-                # Convert string user_id to UUID
-                user_uuid = uuid.UUID(user_id)
-
-                # Query tasks for the specific user
-                statement = select(Task).where(Task.user_id == user_uuid)
-                tasks = session.exec(statement).all()
-
-                # Convert tasks to dictionary format
-                tasks_list = []
-                for task in tasks:
-                    tasks_list.append({
-                        "id": str(task.id),
-                        "title": task.title,
-                        "description": task.description,
-                        "complete": task.complete,
-                        "created_at": task.created_at.isoformat() if task.created_at else None,
-                        "updated_at": task.updated_at.isoformat() if task.updated_at else None
-                    })
-
-                return tasks_list
-        except Exception as e:
-            return {"error": f"Error retrieving tasks: {str(e)}"}
-
-    @function_tool
-    def create_task(user_id: str, title: str, description: str = None, complete: bool = False) -> dict:
-        """Create a new task for the user.
-
-        Args:
-            user_id: The UUID of the user who owns the task.
-            title: The title of the task.
-            description: Optional description of the task.
-            complete: Whether the task is initially marked as complete (default: False).
-        """
-        try:
-            with Session(engine) as session:
-                # Convert string user_id to UUID
-                user_uuid = uuid.UUID(user_id)
-
-                # Create new task
-                task = Task(
-                    title=title,
-                    description=description,
-                    complete=complete,
-                    user_id=user_uuid
-                )
-
-                session.add(task)
-                session.commit()
-                session.refresh(task)
-
-                return {
-                    "id": str(task.id),
-                    "title": task.title,
-                    "description": task.description,
-                    "complete": task.complete,
-                    "created_at": task.created_at.isoformat() if task.created_at else None,
-                    "updated_at": task.updated_at.isoformat() if task.updated_at else None
-                }
-        except Exception as e:
-            return {"error": f"Error creating task: {str(e)}"}
-
-    @function_tool
-    def update_task(task_id: str, title: str = None, description: str = None, complete: bool = None) -> dict:
-        """Update an existing task.
-
-        Args:
-            task_id: The UUID of the task to update.
-            title: New title for the task (optional).
-            description: New description for the task (optional).
-            complete: New completion status for the task (optional).
-        """
-        try:
-            with Session(engine) as session:
-                # Convert string task_id to UUID
-                task_uuid = uuid.UUID(task_id)
-
-                # Get the task
-                task = session.get(Task, task_uuid)
-                if not task:
-                    return {"error": "Task not found"}
-
-                # Update task fields if provided
-                if title is not None:
-                    task.title = title
-                if description is not None:
-                    task.description = description
-                if complete is not None:
-                    task.complete = complete
-
-                session.add(task)
-                session.commit()
-                session.refresh(task)
-
-                return {
-                    "id": str(task.id),
-                    "title": task.title,
-                    "description": task.description,
-                    "complete": task.complete,
-                    "created_at": task.created_at.isoformat() if task.created_at else None,
-                    "updated_at": task.updated_at.isoformat() if task.updated_at else None
-                }
-        except Exception as e:
-            return {"error": f"Error updating task: {str(e)}"}
-
-    @function_tool
-    def delete_task(task_id: str) -> dict:
-        """Delete a task.
-
-        Args:
-            task_id: The UUID of the task to delete.
-        """
-        try:
-            with Session(engine) as session:
-                # Convert string task_id to UUID
-                task_uuid = uuid.UUID(task_id)
-
-                # Get the task
-                task = session.get(Task, task_uuid)
-                if not task:
-                    return {"error": "Task not found"}
-
-                # Delete the task
-                session.delete(task)
-                session.commit()
-
-                return {"message": "Task deleted successfully", "task_id": str(task_uuid)}
-        except Exception as e:
-            return {"error": f"Error deleting task: {str(e)}"}
+    # Initialize the Gemini model
+    gemini_model = genai.GenerativeModel('gemini-2.5-flash')
 
     # Global variable to store current user context
     current_user_context = {}
 
-    # Enhanced tools with automatic user ID injection
-    @function_tool
-    def get_user_tasks_enhanced() -> List[dict]:
-        """Get all tasks for the current user.
+    # Function to interact with the Gemini model
+    async def call_gemini_api(prompt: str) -> str:
+        try:
+            response = await gemini_model.generate_content_async(prompt)
+            return response.text if response.text else "I couldn't generate a response. Please try again."
+        except Exception as e:
+            print(f"Error calling Gemini API: {str(e)}")
+            return f"I'm having trouble connecting to the AI service. Error: {str(e)}"
 
-        Args:
-            None - automatically uses the authenticated user's context
-        """
-        user_id = current_user_context.get('user_id')
-        if not user_id:
-            return {"error": "User context not available"}
-
+    # Enhanced functions for task management
+    def get_user_tasks_enhanced(user_id: str) -> List[dict]:
+        """Get all tasks for the current user."""
         try:
             with Session(engine) as session:
                 # Convert string user_id to UUID
@@ -210,19 +69,8 @@ try:
         except Exception as e:
             return {"error": f"Error retrieving tasks: {str(e)}"}
 
-    @function_tool
-    def create_task_enhanced(title: str, description: str = None, complete: bool = False) -> dict:
-        """Create a new task for the current user.
-
-        Args:
-            title: The title of the task.
-            description: Optional description of the task.
-            complete: Whether the task is initially marked as complete (default: False).
-        """
-        user_id = current_user_context.get('user_id')
-        if not user_id:
-            return {"error": "User context not available"}
-
+    def create_task_enhanced(user_id: str, title: str, description: str = None, complete: bool = False) -> dict:
+        """Create a new task for the current user."""
         try:
             with Session(engine) as session:
                 # Convert string user_id to UUID
@@ -251,20 +99,8 @@ try:
         except Exception as e:
             return {"error": f"Error creating task: {str(e)}"}
 
-    @function_tool
-    def update_task_enhanced(task_id: str, title: str = None, description: str = None, complete: bool = None) -> dict:
-        """Update an existing task for the current user.
-
-        Args:
-            task_id: The UUID of the task to update.
-            title: New title for the task (optional).
-            description: New description for the task (optional).
-            complete: New completion status for the task (optional).
-        """
-        user_id = current_user_context.get('user_id')
-        if not user_id:
-            return {"error": "User context not available"}
-
+    def update_task_enhanced(user_id: str, task_id: str, title: str = None, description: str = None, complete: bool = None) -> dict:
+        """Update an existing task for the current user."""
         try:
             with Session(engine) as session:
                 # Convert string task_id to UUID
@@ -302,17 +138,8 @@ try:
         except Exception as e:
             return {"error": f"Error updating task: {str(e)}"}
 
-    @function_tool
-    def delete_task_enhanced(task_id: str) -> dict:
-        """Delete a task for the current user.
-
-        Args:
-            task_id: The UUID of the task to delete.
-        """
-        user_id = current_user_context.get('user_id')
-        if not user_id:
-            return {"error": "User context not available"}
-
+    def delete_task_enhanced(user_id: str, task_id: str) -> dict:
+        """Delete a task for the current user."""
         try:
             with Session(engine) as session:
                 # Convert string task_id to UUID
@@ -335,33 +162,100 @@ try:
         except Exception as e:
             return {"error": f"Error deleting task: {str(e)}"}
 
-    # Create the agent with Gemini model and enhanced task management tools
-    try:
-        assistant_agent = Agent(
-            name="Todo Assistant",
-            instructions="""You are a helpful Todo AI assistant powered by Google Gemini. You help users manage their tasks and productivity. You can:
-- Answer questions about task management and productivity
-- Create, update, delete, and list tasks for users
-- Provide productivity tips and time management advice
-- Suggest task prioritization strategies
-- Help users plan their day and set goals
-- Answer questions about the todo app features
+    # Function to process user commands using natural language
+    def process_task_command(user_input: str, user_id: str) -> str:
+        """Process natural language commands to interact with tasks."""
+        import re
 
-Be concise, helpful, and if user ask something else reply a short answer then focused on productivity and task management in your responses. If asked about capabilities beyond task management, politely redirect to productivity topics.
+        # Convert user input to lowercase for easier parsing
+        lower_input = user_input.lower()
 
-When users ask to create, update, delete, or list tasks, use the appropriate tools to perform these actions. You have access to the user context automatically, so you don't need to ask for user IDs.""",
-            model=gemini_model,
-            tools=[get_user_tasks_enhanced, create_task_enhanced, update_task_enhanced, delete_task_enhanced],
-        )
-        AGENTS_AVAILABLE = True
-    except Exception as e:
-        print(f"Error creating assistant agent: {str(e)}")
-        AGENTS_AVAILABLE = False
-        assistant_agent = None
+        # Handle task listing
+        if any(keyword in lower_input for keyword in ['list', 'show', 'view', 'all', 'my', 'tasks']):
+            tasks = get_user_tasks_enhanced(user_id)
+            if isinstance(tasks, dict) and "error" in tasks:
+                return f"Error retrieving tasks: {tasks['error']}"
+
+            if not tasks or (isinstance(tasks, list) and len(tasks) == 0):
+                return "You don't have any tasks yet. You can create a new task by saying something like 'Create a task to buy groceries'."
+
+            task_list = "Here are your tasks:\n"
+            for task in tasks:
+                if isinstance(task, dict) and 'title' in task:
+                    status = "✓ Completed" if task.get('complete') else "○ Pending"
+                    task_list += f"- {status}: {task['title']}"
+                    if task.get('description'):
+                        task_list += f" - {task['description']}"
+                    task_list += f" (ID: {task['id']})\n"
+
+            return task_list.strip()
+
+        # Handle task creation
+        elif any(keyword in lower_input for keyword in ['create', 'add', 'new', 'make']):
+            # Extract task title and description from user input
+            # Look for common patterns like "create task to..." or "create a task to..."
+            create_patterns = [
+                r'create\s+(?:a\s+)?(?:task|todo)\s+to\s+(.+?)(?:\s+and\s+.*)?$',
+                r'add\s+(?:a\s+)?(?:task|todo)\s+to\s+(.+?)(?:\s+and\s+.*)?$',
+                r'make\s+(?:a\s+)?(?:task|todo)\s+to\s+(.+?)(?:\s+and\s+.*)?$',
+                r'new\s+(?:task|todo)\s+(?:to|for)\s+(.+?)(?:\s+and\s+.*)?$'
+            ]
+
+            title = None
+            for pattern in create_patterns:
+                match = re.search(pattern, user_input, re.IGNORECASE)
+                if match:
+                    title = match.group(1).strip()
+                    break
+
+            if not title:
+                # If we can't extract a title, ask the user for clarification
+                return "I'd be happy to create a task for you. Please specify what task you'd like to create. For example: 'Create a task to buy groceries'"
+
+            result = create_task_enhanced(user_id, title=title)
+            if isinstance(result, dict) and "error" in result:
+                return f"Error creating task: {result['error']}"
+
+            return f"I've created the task '{result['title']}' for you (ID: {result['id']})."
+
+        # Handle task updates
+        elif any(keyword in lower_input for keyword in ['update', 'change', 'modify', 'complete', 'done', 'finish']):
+            # Simple implementation - look for task ID and completion status
+            id_match = re.search(r'(?:task|id)\s+(\w+)', user_input, re.IGNORECASE)
+            if id_match:
+                task_id = id_match.group(1)
+
+                # Check if user wants to mark as complete
+                if any(word in lower_input for word in ['complete', 'done', 'finish', 'completed']):
+                    result = update_task_enhanced(user_id, task_id, complete=True)
+                else:
+                    return "To update a task, please specify what you'd like to change. For example: 'Update task 123 to mark as complete' or 'Change task 123 title to new title'"
+
+                if isinstance(result, dict) and "error" in result:
+                    return f"Error updating task: {result['error']}"
+                return f"Task {result['id']} has been updated successfully."
+
+            return "To update a task, please specify the task ID. For example: 'Update task 123 to mark as complete'"
+
+        # Handle task deletion
+        elif any(keyword in lower_input for keyword in ['delete', 'remove', 'cancel']):
+            id_match = re.search(r'(?:task|id)\s+(\w+)', user_input, re.IGNORECASE)
+            if id_match:
+                task_id = id_match.group(1)
+                result = delete_task_enhanced(user_id, task_id)
+                if isinstance(result, dict) and "error" in result:
+                    return f"Error deleting task: {result['error']}"
+                return f"{result['message']}."
+
+            return "To delete a task, please specify the task ID. For example: 'Delete task 123' or 'Remove task 123'"
+
+        # If none of the above, return None to indicate it's not a task-related command
+        return None
+
+    AGENTS_AVAILABLE = True
 except ImportError as e:
-    print(f"Import error in chat module: {str(e)}")
+    print(f"Google Generative AI library not available: {str(e)}")
     AGENTS_AVAILABLE = False
-    assistant_agent = None
 
 router = APIRouter()
 
@@ -384,27 +278,45 @@ async def chat(
     request: ChatRequest,
     current_user_id: uuid.UUID = Depends(get_current_user_id)
 ):
-    """Send a message to the AI agent and get a response with conversation state maintained."""
+    """Send a message to the AI and get a response with conversation state maintained."""
     if not AGENTS_AVAILABLE:
         # Return a helpful error message instead of a generic 500 error
         error_response = "I'm sorry, but the AI assistant is currently unavailable. Please try again later."
         return ChatResponse(response=error_response, conversation_id=str(uuid.uuid4()))
 
     try:
-        # Set the global user context for the function tools
-        current_user_context['user_id'] = str(current_user_id)
+        user_id_str = str(current_user_id)
 
-        # Get the conversation manager
-        conversation_manager = get_conversation_manager(assistant_agent)
+        # Check if this is a task management command
+        task_response = process_task_command(request.message, user_id_str)
+        if task_response is not None and not task_response.startswith("I'd be happy") and not task_response.startswith("To "):
+            # This was a recognized task command and processed
+            return ChatResponse(response=task_response, conversation_id=request.conversation_id or str(uuid.uuid4()))
 
-        # Process the message with conversation context
-        response, conversation_id = await conversation_manager.process_message(
-            user_id=str(current_user_id),
-            message=request.message,
-            conversation_id=request.conversation_id
+        # For non-task commands, use the Gemini API
+        # Create a prompt that includes context about the task management system
+        prompt = f"""
+        You are a helpful Todo AI assistant powered by Google Gemini. You help users manage their tasks and productivity.
+
+        The user has the following message: "{request.message}"
+
+        If the user is asking about tasks, productivity, or wants to manage their tasks, you can help with:
+        - Listing their tasks
+        - Creating new tasks
+        - Updating existing tasks
+        - Deleting tasks
+
+        For other questions, provide helpful responses related to productivity, time management, and general assistance.
+
+        Keep your responses concise and helpful.
+        """
+
+        response_text = await call_gemini_api(prompt)
+
+        return ChatResponse(
+            response=response_text,
+            conversation_id=request.conversation_id or str(uuid.uuid4())
         )
-
-        return ChatResponse(response=response, conversation_id=conversation_id)
     except Exception as e:
         # Log the actual error for debugging purposes
         print(f"Chat endpoint error: {str(e)}")
