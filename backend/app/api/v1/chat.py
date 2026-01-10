@@ -327,8 +327,8 @@ except ImportError:
                 # If no UUID found, try to find by title
                 # Extract potential title after update/change/modify keywords
                 title_patterns = [
-                    r'(?:update|change|modify)\s+(?:task\s+)?(.+?)\s+(?:to|and)',
-                    r'(?:update|change|modify)\s+(?:the\s+)?(.+?)\s+(?:to|and)'
+                    r'(?:update|change|modify)\s+(?:task\s+)?(?:named\s+|with\s+name\s+|name:\s*)?(.+?)(?:\s+(?:to|and)|$)',
+                    r'(?:update|change|modify)\s+(?:the\s+)?(?:task\s+)?(?:named\s+|with\s+name\s+|name:\s*)?(.+?)(?:\s+(?:to|and)|$)'
                 ]
 
                 extracted_title = None
@@ -394,8 +394,8 @@ except ImportError:
                 # If no UUID found, try to find by title
                 # Extract potential title after delete/remove/cancel keywords
                 title_patterns = [
-                    r'(?:delete|remove|cancel)\s+(?:task\s+)?(.+)',
-                    r'(?:delete|remove|cancel)\s+(?:the\s+)?(.+)'
+                    r'(?:delete|remove|cancel)\s+(?:task\s+)?(?:named\s+|with\s+name\s+|name:\s*)?(.+)',
+                    r'(?:delete|remove|cancel)\s+(?:the\s+)?(?:task\s+)?(?:named\s+|with\s+name\s+|name:\s*)?(.+)'
                 ]
 
                 extracted_title = None
