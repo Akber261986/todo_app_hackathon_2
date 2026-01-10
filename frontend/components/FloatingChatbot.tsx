@@ -248,12 +248,12 @@ const FloatingChatbot = () => {
       {/* Floating Chat Button */}
       <button
         onClick={toggleChat}
-        className="fixed bottom-6 right-6 z-50 w-16 h-16 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full shadow-lg flex items-center justify-center text-white hover:from-cyan-500 hover:to-blue-600 transition-all duration-300 group"
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 md:w-16 md:h-16 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full shadow-lg flex items-center justify-center text-white hover:from-cyan-500 hover:to-blue-600 transition-all duration-300 group"
         aria-label="Open chat"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="h-8 w-8 group-hover:scale-110 transition-transform"
+          className="h-6 w-6 md:h-8 md:w-8 group-hover:scale-110 transition-transform"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -269,8 +269,9 @@ const FloatingChatbot = () => {
 
       {/* Chat Modal */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-full max-w-md max-h-[70vh] flex flex-col">
-          <div className="bg-gradient-to-b from-blue-900/90 to-blue-800/90 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 flex flex-col h-full min-h-0">
+        <div className="fixed inset-0 z-50 flex items-end justify-end p-4 sm:p-0 md:bottom-24 md:right-6 md:items-end md:justify-end md:p-0">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity md:hidden" onClick={() => setIsOpen(false)}></div>
+          <div className="relative w-full h-full max-w-full max-h-full md:w-[90vw] md:max-w-md md:max-h-[70vh] lg:w-full lg:max-w-md lg:max-h-[70vh] bg-gradient-to-b from-blue-900/90 to-blue-800/90 backdrop-blur-md rounded-t-2xl md:rounded-2xl shadow-2xl border border-white/20 flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-white/20">
               <div className="flex items-center space-x-2">
@@ -289,10 +290,10 @@ const FloatingChatbot = () => {
               </button>
             </div>
 
-            {/* Main Content */}
-            <div className="flex flex-1 min-h-0">
-              {/* Conversation List */}
-              <div className="w-1/3 border-r border-white/20 flex flex-col bg-blue-900/30 min-h-0">
+            {/* Main Content - Mobile: Vertical Stack, Desktop: Horizontal Split */}
+            <div className="flex flex-col md:flex-row flex-1 min-h-0">
+              {/* Conversation List - Hidden on mobile when chat is open, shown as drawer or toggle */}
+              <div className={`${currentConversationId && messages.length > 0 ? 'hidden md:flex' : 'flex md:hidden'} md:flex md:w-1/3 border-t md:border-r border-white/20 md:border-t-0 flex-col bg-blue-900/30 min-h-0`}>
                 <div className="p-3 flex-shrink-0">
                   <button
                     onClick={startNewChat}
@@ -335,8 +336,29 @@ const FloatingChatbot = () => {
                 </div>
               </div>
 
-              {/* Chat Area */}
-              <div className="w-3/4 flex flex-col min-h-0">
+              {/* Chat Area - Full width on mobile, shared on desktop */}
+              <div className={`${currentConversationId && messages.length > 0 ? 'w-full' : 'md:w-2/3'} flex flex-col min-h-0`}>
+                {/* Mobile conversation selector bar */}
+                {(currentConversationId && messages.length > 0) && (
+                  <div className="flex md:hidden items-center justify-between p-3 border-b border-white/20 bg-blue-900/30">
+                    <div className="flex-1 min-w-0">
+                      <div className="text-white text-sm font-medium truncate">
+                        {conversations.find(c => c.id === currentConversationId)?.title || 'Current Chat'}
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        // Toggle to show conversation list on mobile
+                        setCurrentConversationId(null);
+                        setMessages([]);
+                      }}
+                      className="text-cyan-400 text-sm font-medium ml-2"
+                    >
+                      Switch
+                    </button>
+                  </div>
+                )}
+
                 <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
                   {messages.length === 0 ? (
                     <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
@@ -406,7 +428,7 @@ const FloatingChatbot = () => {
                           className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                         >
                           <div
-                            className={`max-w-[80%] rounded-2xl px-4 py-3 ${message.role === 'user'
+                            className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-4 py-3 ${message.role === 'user'
                               ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-br-none shadow-md'
                               : message.isError
                                 ? 'bg-red-900/50 border border-red-500/50 text-red-100 rounded-bl-none shadow-md'
@@ -428,7 +450,7 @@ const FloatingChatbot = () => {
                       ))}
                       {isLoading && (
                         <div className="flex justify-start">
-                          <div className="bg-blue-700/50 text-white rounded-2xl rounded-bl-none px-4 py-3 max-w-[80%] shadow-md">
+                          <div className="bg-blue-700/50 text-white rounded-2xl rounded-bl-none px-4 py-3 max-w-[85%] sm:max-w-[80%] shadow-md">
                             <div className="flex space-x-2">
                               <div className="w-2 h-2 bg-white rounded-full animate-bounce"></div>
                               <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
@@ -454,6 +476,20 @@ const FloatingChatbot = () => {
                         placeholder={messages.length === 0 ? "Type your message or select a suggestion..." : "Type your message..."}
                         disabled={isLoading}
                         className="flex-1 bg-blue-800/50 border border-white/20 rounded-full px-4 py-3 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 min-w-0 text-sm"
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleSubmit(e);
+                          }
+                        }}
+                        onTouchEnd={(e) => {
+                          // Ensure the input stays visible when virtual keyboard appears on mobile
+                          setTimeout(() => {
+                            if (inputRef.current) {
+                              inputRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                            }
+                          }, 100);
+                        }}
                       />
                       <button
                         type="submit"
