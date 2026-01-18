@@ -1,0 +1,94 @@
+# Patterns to ignore when building a helm chart
+
+# Editor swap files
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Log files
+*.log
+
+# Local configuration
+.helmignore
+.gitignore
+.git/
+.svn/
+.hg/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Secrets and sensitive data
+*.secret.yaml
+secrets/
+*.key
+*.crt
+*.pem
+*.p12
+*.jks
+*.keystore
+
+# Local development files
+.local/
+dev/
+local/
+
+# IDE files
+.vscode/
+.idea/
+*.tmproj
+nbproject/
+
+# Node.js (if using node-based tools with Helm)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python (if using python-based tools with Helm)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+
+# Environment-specific values
+values.local.yaml
+values.dev.yaml
+values.staging.yaml
+values.prod.yaml
+*.local.yaml
+*.dev.yaml
+*.staging.yaml
+*.prod.yaml
+
+# Backup and swap files
+*~
+*.bak
+*.orig
+*.backup
+*.copy

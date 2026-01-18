@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Remove static export to enable server-side rendering and API routes
+  output: undefined, // Use default output (server-side rendering)
+  trailingSlash: false, // Default behavior
   typescript: {
     // !! WARN !!
     // Dangerously allow production builds to successfully complete even if
@@ -7,15 +10,15 @@ const nextConfig = {
     // !! WARN !!
     ignoreBuildErrors: true,
   },
-  // Remove experimental turbopack configuration as it's causing build issues
+  // API proxy rewrites for development and production
   async rewrites() {
-    let apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
-    
+    let apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.BACKEND_URL || 'http://localhost:8000';
+
     // Ensure the URL has a protocol
     if (!apiUrl.startsWith('http://') && !apiUrl.startsWith('https://')) {
-      apiUrl = `https://${apiUrl}`;
+      apiUrl = `http://${apiUrl}`;
     }
-    
+
     // Remove trailing slash if present to avoid double slashes with /api/:path*
     if (apiUrl.endsWith('/')) {
       apiUrl = apiUrl.slice(0, -1);

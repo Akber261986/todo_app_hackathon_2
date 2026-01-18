@@ -25,7 +25,7 @@ export default function TaskCard({ task, onEdit, onDelete, onToggleComplete }: T
 
   return (
     <div className={`bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden transition-all duration-200 hover:shadow-md ${task.complete ? 'bg-green-50 border-green-200' : ''}`}>
-      <div className="p-4">
+      <div className="px-4 py-2">
         <div className="flex items-start">
           <div className="flex items-center h-5 mt-0.5">
             <input
